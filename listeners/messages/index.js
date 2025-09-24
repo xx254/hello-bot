@@ -1,6 +1,6 @@
 import { sampleMessageCallback } from './sample-message.js';
 import { conversationCallback } from './conversation-handler.js';
-import { demoCallback } from './demo-handler.js';
+import { demoCallback, handleTestConfirmation, handleThreadConfirmation } from './demo-handler.js';
 
 export const register = (app) => {
   // 原有的问候语处理（保留作为示例）
@@ -11,4 +11,8 @@ export const register = (app) => {
   
   // 新的对话处理器 - 处理所有直接消息（DM）和提及bot的消息
   app.message(conversationCallback);
+  
+  // 注册按钮交互处理器
+  app.action(/^confirm_test_\d+$/, handleTestConfirmation);
+  app.action(/^thread_confirm_test_\d+$/, handleThreadConfirmation);
 };

@@ -121,14 +121,7 @@ const conversationPatterns = {
  * 获取默认回复（当没有匹配到特定模式时）
  */
 const defaultReplies = [
-  'That\'s interesting! Tell me more about that.',
-  'I see! What else would you like to chat about?',
-  'Thanks for sharing that with me! Anything else on your mind?',
-  'That sounds great! What else is happening with you?',
-  'I appreciate you telling me that! What would you like to talk about next?',
-  'Interesting perspective! I\'d love to hear more of your thoughts.',
-  'That\'s cool! What else would you like to discuss?',
-  'I hear you! Is there anything specific you\'d like to chat about?'
+  'Analyzing your data to determine the right incrementality tests for you.',
 ];
 
 /**

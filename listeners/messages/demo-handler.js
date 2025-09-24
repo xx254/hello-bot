@@ -269,7 +269,7 @@ const demoCallback = async ({ message, say, logger }) => {
                   type: "button",
                   text: {
                     type: "plain_text",
-                    text: "✅ Confirm & Launch"
+                    text: "✅ Confirm & Continue"
                   },
                   action_id: `confirm_test_${i+1}`,
                   style: "primary"
@@ -302,81 +302,163 @@ const demoCallback = async ({ message, say, logger }) => {
             const cardResult = await say(suggestionCard);
             logger.info(`发送了测试建议卡片 ${i+1}: ${suggestion.title}`);
             
-            // 为每个卡片创建独立的thread
-            const cardThreadMessage = {
-              thread_ts: cardResult.ts,
-              blocks: [
-                {
+              // 为每个卡片创建独立的thread - 使用新的详细内容
+              const threadContents = [
+                // 卡片 1 - Traffic Campaign Test
+                [
+                  "💡 Thought\n```Traffic campaigns drive clicks, but in the post-ATT era many advertisers report inflated volumes with little incremental value.```",
+                  "🔍 Research/Input\n```We noticed 72% of your budget is on Traffic campaigns. Regulators are also pressing platforms to prove true incremental value.``` <https://www.theverge.com/2023/9/12/23871444/google-antitrust-trial-doj-ad-tech|The Verge: Google DOJ ad-tech trial>",
+                  "❤️ Based on your data + industry signals\n```👉 Hypothesis: Traffic + Conversion campaigns deliver ≥ +15% incremental conversions compared to Conversion-only.\nMeta recently leaned into AI-driven campaign automation, but Reddit's r/adops community is warning that Traffic campaigns act like \"cheap awareness.\"``` <https://www.reddit.com/r/adops/|Reddit r/adops>",
+                  "💡 Thought\n```This test tells you if your largest budget line is truly incremental — or ripe for reallocation.```",
+                  "📋 Playbook\n```Geo split Test = Traffic+Conversion vs Control = Conversion-only\n45-day run\nTrack Incremental Conversions, CPIC, ROAS Lift```",
+                  "💡 Thought\n```$75k/$75k budget → Power ~80%, MDE ~8%.```",
+                  "🔍 Research\n```If lift is weak, you'd mirror the trend of advertisers cutting \"vanity spend.\"``` <https://www.wsj.com/articles/the-ad-revolution-11234567890|WSJ: The Ad Revolution>"
+                ],
+                // 卡片 2 - Tier 1 vs Tier 2
+                [
+                  "💡 Thought\n```Tier 1 CPMs hit record highs. Adweek/Digiday report advertisers shifting into Tier 2/3 for efficiency.```",
+                  "🔍 Research/Input\n```Your Meta spend is concentrated in Tier 1s. r/adtech discussions highlight \"Tier 1 saturation.\"```",
+                  "❤️ Based on your data + market events\n```👉 Hypothesis: Tier 1 incremental lift ≥ +12%, Tier 2 ≤ +3%.\nThis echoes macro pressure: WPP's CEO stepped down under AI cost pressures and demand for efficiency.``` <https://www.theguardian.com/media/2023/sep/11/wpp-ceo-mark-read-steps-down|Guardian>",
+                  "💡 Thought\n```This test tells you if you're overspending in costly Tier 1s.```",
+                  "📋 Playbook\n```Tier 1 = Test, Tier 2 = Control\n35 days\nMetrics: Incremental conversions by tier, geo-ROAS```",
+                  "💡 Thought\n```$60k/$60k → MDE ~10%.```",
+                  "🔍 Research\n```If Tier 2 performs better, you'll follow brands diversifying spend under macroeconomic stress.```"
+                ],
+                // 卡片 3 - Cross-channel synergy
+                [
+                  "💡 Thought\n```TikTok faces political/regulatory uncertainty. Trump & Xi recently blessed a U.S. spin-off deal.``` <https://www.washingtonpost.com/technology/2023/09/15/tiktok-deal-trump-xi|Washington Post>",
+                  "🔍 Research/Input\n```You're running TikTok + Meta, creating overlap for synergy testing.```",
+                  "❤️ Based on your data + context\n```👉 Hypothesis: TikTok + Meta together deliver ≥ +20% incremental lift vs Meta-only.\nMeta is consolidating market share, even funding lobbying against regulation.``` <https://www.axios.com/2023/09/10/meta-super-pac-lobbying|Axios: Meta Super PAC>",
+                  "💡 Thought\n```This test decides if TikTok is additive or just redundant amid policy risks.```",
+                  "📋 Playbook\n```Test = TikTok+Meta; Control = Meta-only\n40 days\nMetrics: Synergy lift, combined ROAS```",
+                  "💡 Thought\n```$80k/$40k → Power ~85%, MDE ~10%.```",
+                  "🔍 Research\n```If synergy is weak, reallocating to Meta aligns with its regulatory strategy.```"
+                ],
+                // 卡片 4 - Brand Halo
+                [
+                  "💡 Thought\n```Google's attribution model updates & rising brand keyword CPCs have reignited halo debates.```",
+                  "🔍 Research/Input\n```18% of your spend is Brand ads alongside Search. Many advertisers ask if this is just \"paying for your own traffic.\"```",
+                  "❤️ Based on your data + industry chatter\n```👉 Hypothesis: Brand ads indirectly increase Search conversions ≥ +8%.\nThis is timely: Amazon is automating ad creation to grow ad sales, and Google faces DOJ scrutiny over ad-tech dominance. Both trends put pressure on proving brand-to-search value.``` <https://www.wsj.com/articles/amazon-ad-automation-11234567890|WSJ> | <https://www.theverge.com/2023/9/12/23871444/google-doj-antitrust-ad-tech|The Verge>",
+                  "💡 Thought\n```The result will show if Brand spend expands funnel or just cannibalizes Search.```",
+                  "📋 Playbook\n```Test = Brand+Search; Control = Search-only\n30 days\nMetrics: Search lift, halo effect, blended ROAS```",
+                  "💡 Thought\n```$50k/$50k → MDE ~12%.```",
+                  "🔍 Research\n```If halo is weak, you echo Adweek/StackAdapt commentary on reallocating Brand budgets.```"
+                ]
+              ];
+
+              const cardThreadMessage = {
+                thread_ts: cardResult.ts,
+                blocks: threadContents[i].map(content => ({
                   type: "section",
                   text: {
                     type: "mrkdwn",
-                    text: "*Steps taken (8):*"
+                    text: content
                   }
-                },
-                {
-                  type: "section",
-                  text: {
-                    type: "mrkdwn",
-                    text: "1. 💡 Thought:\n```An incrementality test is needed, with the goal of verifying whether ads generate true incremental users.```"
-                  }
-                },
-                {
-                  type: "section",
-                  text: {
-                    type: "mrkdwn",
-                    text: "2. 🔍 Research/Input:\n```Data sources are already connected automatically (ad spend, conversions, geographic / audience splits).```"
-                  }
-                },
-                {
-                  type: "section",
-                  text: {
-                    type: "mrkdwn",
-                    text: "3. 💡 Thought:\n```Choose the experiment design method (e.g., geo-split holdout).```"
-                  }
-                },
-                {
-                  type: "section",
-                  text: {
-                    type: "mrkdwn",
-                    text: `4. ❤️ Based on your data, we suggest running ${suggestion.title}:\n\`\`\`${suggestion.suggestion}\`\`\``
-                  }
-                },
-                {
-                  type: "section",
-                  text: {
-                    type: "mrkdwn",
-                    text: "5. 💡 Thought:\n```Based on the selected hypothesis, the system automatically generates the experiment design.```"
-                  }
-                },
-                {
-                  type: "section",
-                  text: {
-                    type: "mrkdwn",
-                    text: "6. 📋 Playbook:\n```List out execution steps (grouping, experiment duration, data collection frequency, quality checks).```"
-                  }
-                },
-                {
-                  type: "section",
-                  text: {
-                    type: "mrkdwn",
-                    text: "7. 💡 Thought:\n```Automatically calculate sample size, statistical power, and minimum detectable effect (MDE).```"
-                  }
-                },
-                {
-                  type: "section",
-                  text: {
-                    type: "mrkdwn",
-                    text: "8. 🔍 Research:\n```Continuous monitoring and analysis of test results to ensure statistical significance and actionable insights.```"
-                  }
-                }
-              ]
-            };
+                }))
+              };
             
             // 延迟发送thread消息
             setTimeout(async () => {
               try {
                 await say(cardThreadMessage);
                 logger.info(`发送了卡片 ${i+1} 的thread消息`);
+                
+                // 获取测试类型信息
+                const testTypes = [
+                  "Traffic Campaign Test",
+                  "Geographic Lift Test", 
+                  "Cross-Channel Synergy Test",
+                  "Brand Halo Effect Test"
+                ];
+                
+                // 发送测试计划选择消息
+                const testPlanMessage = {
+                  thread_ts: cardResult.ts,
+                  blocks: [
+                    {
+                      type: "section",
+                      text: {
+                        type: "mrkdwn",
+                        text: `*Choose your testing plan (auto-generated):*\n*${testTypes[i]}*`
+                      }
+                    },
+                    {
+                      type: "section",
+                      text: {
+                        type: "mrkdwn",
+                        text: "🔹 *Conservative* → $25k / 25k, ROI ≥ 1.1x, MDE 15%, Power 70%"
+                      },
+                      accessory: {
+                        type: "button",
+                        text: {
+                          type: "plain_text",
+                          text: "Select"
+                        },
+                        action_id: `select_conservative_${i+1}`,
+                        style: "primary"
+                      }
+                    },
+                    {
+                      type: "section",
+                      text: {
+                        type: "mrkdwn",
+                        text: "🔸 *Balanced* → $50k / 50k, ROI ≥ 1.2x, MDE 10%, Power 80%"
+                      },
+                      accessory: {
+                        type: "button",
+                        text: {
+                          type: "plain_text",
+                          text: "Select"
+                        },
+                        action_id: `select_balanced_${i+1}`,
+                        style: "primary"
+                      }
+                    },
+                    {
+                      type: "section",
+                      text: {
+                        type: "mrkdwn",
+                        text: "🔺 *Aggressive* → $100k / 100k, ROI ≥ 1.3x, MDE 5%, Power 90%"
+                      },
+                      accessory: {
+                        type: "button",
+                        text: {
+                          type: "plain_text",
+                          text: "Select"
+                        },
+                        action_id: `select_aggressive_${i+1}`,
+                        style: "primary"
+                      }
+                    },
+                    {
+                      type: "section",
+                      text: {
+                        type: "mrkdwn",
+                        text: "✏️ *Customize*"
+                      },
+                      accessory: {
+                        type: "button",
+                        text: {
+                          type: "plain_text",
+                          text: "Select"
+                        },
+                        action_id: `customize_plan_${i+1}`,
+                        style: "primary"
+                      }
+                    }
+                  ]
+                };
+                
+                // 延迟发送测试计划消息
+                setTimeout(async () => {
+                  try {
+                    await say(testPlanMessage);
+                    logger.info(`发送了卡片 ${i+1} 的测试计划选择消息`);
+                  } catch (planError) {
+                    logger.error(`发送卡片 ${i+1} 测试计划失败:`, planError);
+                  }
+                }, 1000); // thread消息发送后1秒发送测试计划
+                
               } catch (threadError) {
                 logger.error(`发送卡片 ${i+1} thread失败:`, threadError);
               }
@@ -409,6 +491,7 @@ const demoCallback = async ({ message, say, logger }) => {
 const isDemoCommand = (message) => {
   const demoKeywords = [
     'demo',
+    'what test should I run next',
     'example',
     'show me what you can do',
     'what can you do'
@@ -417,4 +500,248 @@ const isDemoCommand = (message) => {
   return demoKeywords.some(keyword => message.includes(keyword));
 };
 
-export { demoCallback };
+/**
+ * 处理测试确认按钮点击
+ * @param {Object} param0 - Slack事件参数
+ */
+const handleTestConfirmation = async ({ ack, say, action, body }) => {
+  await ack();
+  
+  try {
+    // 从action_id中提取测试编号
+    const testNumber = action.action_id.replace('confirm_test_', '');
+    
+    // 获取对应的测试信息
+    const testSuggestions = [
+      {
+        title: "Whether Traffic campaigns add incremental conversions beyond Conversion-only campaigns",
+        testType: "Traffic Campaign Test"
+      },
+      {
+        title: "Whether Meta ads drive incremental lift in Tier 1 but not Tier 2", 
+        testType: "Geographic Lift Test"
+      },
+      {
+        title: "Whether cross-channel synergy (TikTok + Meta vs Meta alone) drives incremental lift",
+        testType: "Cross-Channel Synergy Test"
+      },
+      {
+        title: "Whether Brand ads indirectly lift search conversions",
+        testType: "Brand Halo Effect Test"
+      }
+    ];
+    
+    const selectedTest = testSuggestions[parseInt(testNumber) - 1];
+    
+    // 在thread中发送测试计划选择消息
+    const testPlanMessage = {
+      thread_ts: body.message.ts, // 回复到原卡片的thread
+      blocks: [
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `*Choose your testing plan (auto-generated):*\n\n*${selectedTest.testType}*`
+          }
+        },
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: "🔹 *Conservative* → $25k / 25k, ROI ≥ 1.1x, MDE 15%, Power 70%"
+          },
+          accessory: {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: "Select Conservative"
+            },
+            action_id: `select_conservative_${testNumber}`,
+            style: "primary"
+          }
+        },
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: "🔸 *Balanced* → $50k / 50k, ROI ≥ 1.2x, MDE 10%, Power 80%"
+          },
+          accessory: {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: "Select Balanced"
+            },
+            action_id: `select_balanced_${testNumber}`,
+            style: "primary"
+          }
+        },
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: "🔺 *Aggressive* → $100k / 100k, ROI ≥ 1.3x, MDE 5%, Power 90%"
+          },
+          accessory: {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: "Select Aggressive"
+            },
+            action_id: `select_aggressive_${testNumber}`,
+            style: "primary"
+          }
+        },
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: "✏️ *Customize*"
+          },
+          accessory: {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: "Customize Plan"
+            },
+            action_id: `customize_plan_${testNumber}`
+          }
+        }
+      ]
+    };
+    
+    await say(testPlanMessage);
+    logger.info(`发送了测试 ${testNumber} 的计划选择消息`);
+    
+  } catch (error) {
+    logger.error('处理测试确认失败:', error);
+    await say({
+      thread_ts: body.message.ts,
+      text: 'Sorry, there was an error processing your request. Please try again!'
+    });
+  }
+};
+
+/**
+ * 处理thread中的确认按钮点击
+ * @param {Object} param0 - Slack事件参数
+ */
+const handleThreadConfirmation = async ({ ack, say, action, body }) => {
+  await ack();
+  
+  try {
+    // 从action_id中提取测试编号
+    const testNumber = action.action_id.replace('thread_confirm_test_', '');
+    
+    // 获取对应的测试信息
+    const testSuggestions = [
+      {
+        title: "Whether Traffic campaigns add incremental conversions beyond Conversion-only campaigns",
+        testType: "Traffic Campaign Test"
+      },
+      {
+        title: "Whether Meta ads drive incremental lift in Tier 1 but not Tier 2", 
+        testType: "Geographic Lift Test"
+      },
+      {
+        title: "Whether cross-channel synergy (TikTok + Meta vs Meta alone) drives incremental lift",
+        testType: "Cross-Channel Synergy Test"
+      },
+      {
+        title: "Whether Brand ads indirectly lift search conversions",
+        testType: "Brand Halo Effect Test"
+      }
+    ];
+    
+    const selectedTest = testSuggestions[parseInt(testNumber) - 1];
+    
+    // 在thread中发送测试计划选择消息
+    const testPlanMessage = {
+      thread_ts: body.message.thread_ts, // 保持在同一个thread中
+      blocks: [
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `*Choose your testing plan (auto-generated):*\n\n*${selectedTest.testType}*`
+          }
+        },
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: "🔹 *Conservative* → $25k / 25k, ROI ≥ 1.1x, MDE 15%, Power 70%"
+          },
+          accessory: {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: "Select Conservative"
+            },
+            action_id: `select_conservative_${testNumber}`,
+            style: "primary"
+          }
+        },
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: "🔸 *Balanced* → $50k / 50k, ROI ≥ 1.2x, MDE 10%, Power 80%"
+          },
+          accessory: {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: "Select Balanced"
+            },
+            action_id: `select_balanced_${testNumber}`,
+            style: "primary"
+          }
+        },
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: "🔺 *Aggressive* → $100k / 100k, ROI ≥ 1.3x, MDE 5%, Power 90%"
+          },
+          accessory: {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: "Select Aggressive"
+            },
+            action_id: `select_aggressive_${testNumber}`,
+            style: "primary"
+          }
+        },
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: "✏️ *Customize*"
+          },
+          accessory: {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: "Customize Plan"
+            },
+            action_id: `customize_plan_${testNumber}`
+          }
+        }
+      ]
+    };
+    
+    await say(testPlanMessage);
+    logger.info(`发送了测试 ${testNumber} 的thread计划选择消息`);
+    
+  } catch (error) {
+    logger.error('处理thread确认失败:', error);
+    await say({
+      thread_ts: body.message.thread_ts,
+      text: 'Sorry, there was an error processing your request. Please try again!'
+    });
+  }
+};
+
+export { demoCallback, handleTestConfirmation, handleThreadConfirmation };
